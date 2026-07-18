@@ -1,0 +1,65 @@
+import {
+  Bot,
+  BookOpen,
+  Settings2,
+  SquareTerminal,
+  Database,
+  ChevronDown,
+  ChevronRight,
+  User,
+  SquarePlus,
+  Store,
+  MoveDiagonal,
+  MoveDiagonal2,
+  Save,
+  SaveAll,
+  RefreshCw,
+  RefreshCcw,
+  RefreshCwOff,
+  ZoomIn,
+  ZoomOut,
+  Lock,
+  LockOpen,
+  Brackets,
+  type LucideIcon,
+  X,
+} from "lucide-react"
+
+export const IconMap: Record<string, LucideIcon> = {
+  Bot,
+  SquareTerminal,
+  ChevronDown,
+  ChevronRight,
+  BookOpen,
+  Settings2,
+  Database,
+  User,
+  SquarePlus,
+  Store,
+  MoveDiagonal,
+  MoveDiagonal2,
+  Save,
+  SaveAll,
+  RefreshCw,
+  RefreshCcw,
+  RefreshCwOff,
+  ZoomIn,
+  ZoomOut,
+  Lock,
+  LockOpen,
+  Brackets,
+  X,
+}
+
+export const ResolvedIcon = ({
+  name,
+  className,
+  ...props
+}: {
+  name: string
+  className?: string
+  props?: React.SVGProps<SVGSVGElement>
+}) => {
+  const Icon = IconMap[name]
+  return Icon ? <Icon className={className} {...props} /> : null
+}

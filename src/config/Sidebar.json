@@ -1,0 +1,76 @@
+{
+    "header": {
+        "title": "Omnia",
+        "icon": "Bot",
+        "version": "1.0.0"
+    },
+    "main": {
+        "label": "Store Management",
+        "items": [
+            {
+                "title": "Projects",
+                "url": "/projects",
+                "icon": "Database",
+                "active": true,
+                "items": [
+                    {
+                        "title": "Overview",
+                        "url": "/projects/overview",
+                        "active": true
+                    },
+                    {
+                        "title": "Connectors",
+                        "url": "/projects/connectors"
+                    },
+                    {
+                        "title": "Design",
+                        "url": "/projects/modeling"
+                    },
+                    {
+                        "title": "Schema Designer",
+                        "url": "/projects/modeler"
+                    },
+                    {
+                        "title": "Data Entry",
+                        "url": "/projects/dataentry"
+                    }
+                ]
+            },
+            {
+                "title": "Stores",
+                "url": "/stores",
+                "icon": "Store",
+                "active": false,
+                "items": [
+                    {
+                        "title": "Overview",
+                        "url": "/store/orders"
+                    },
+                    {
+                        "title": "Orders",
+                        "url": "/store/orders"
+                    },
+                    {
+                        "title": "Products",
+                        "url": "/store/products"
+                    },
+                    {
+                        "title": "categories",
+                        "url": "/store/categories"
+                    },
+                    {
+                        "title": "Discounts",
+                        "url": "/store/discounts"
+                    },
+                    {
+                        "title": "Collections",
+                        "url": "/store/collections"
+                    }
+                ]
+            }
+        ]
+    },
+    "footer": {
+        "label": "© 2026"
+    }
+}
