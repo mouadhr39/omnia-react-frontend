@@ -4,11 +4,10 @@ import {
   type PageNode,
   type EditorMode,
   type ComponentType,
-  PageSummary,
 } from '@/editor/types/page';
 import { generateId } from '@/editor/utils/generateId';
 import { cloneNode } from '@/editor/utils/cloneNode';
-import { insertNode, moveNode, removeNode } from '@/editor/utils/insertNode';
+import { insertNode, moveNode, removeNode, findNode, findNodeParentAndIndex } from '@/editor/utils/insertNode';
 import { type StorageAdapter } from '@/editor/types/page';
 import { localStorageAdapter } from '@/editor/storage/localStorageAdapter';
 
@@ -22,11 +21,15 @@ export interface PageStore {
   document: PageDocument | null;
   lastDocId: string | null;
   selectedNodeId: string | null;
+  dialogNodeId: string | null;
   mode: EditorMode;
   isSaving: boolean;
   lastSaved: number | null;
   undoable: UndoableState;
   adapter: StorageAdapter;
+  clipboard: PageNode | null;
+  mediaLibrary: PageNode[];
+  openParsys: boolean;
   loadDocument: (id: string) => Promise<void>;
   createDocument: (title: string) => Promise<void>;
   saveDocument: () => Promise<void>;
@@ -41,8 +44,16 @@ export interface PageStore {
   moveNode: (id: string, newParentId: string | null, newIndex: number) => void;
   updateNodeProps: (id: string, props: Record<string, unknown>) => void;
   updateNodeDesign: (id: string, design: Partial<PageNode['design']>) => void;
+  duplicateNode: (id: string) => void;
+  pasteAfterNode: (targetId: string) => void;
+  copyToClipboard: (id: string) => void;
+  parsysAdd: (type: ComponentType) => void;
+  addMediaAsset: (node: PageNode) => void;
+  removeMediaAsset: (id: string) => void;
+  setOpenParsys: (open: boolean) => void;
 
   selectNode: (id: string | null) => void;
+  setDialogNodeId: (id: string | null) => void;
   setMode: (mode: EditorMode) => void;
 
   updateHead: (head: Partial<PageDocument['head']>) => void;
@@ -84,6 +95,7 @@ function cloneNodeDoc(doc: PageDocument): PageDocument {
 export const usePageStore = create<PageStore>((set, get) => ({
   document: localStorageAdapter.loadLastPage(),
   selectedNodeId: null,
+  dialogNodeId: null,
   lastDocId: null,
   listdocs: null,
   mode: 'edit',
@@ -91,6 +103,9 @@ export const usePageStore = create<PageStore>((set, get) => ({
   lastSaved: null,
   undoable: { past: [], present: null, future: [] },
   adapter: localStorageAdapter,
+  clipboard: null,
+  mediaLibrary: [],
+  openParsys: false,
 
 
   loadDocument: async (id: string) => {
@@ -241,6 +256,7 @@ export const usePageStore = create<PageStore>((set, get) => ({
   },
 
   selectNode: (id) => set({ selectedNodeId: id }),
+  setDialogNodeId: (id) => set({ dialogNodeId: id }),
   setMode: (mode) => set({ mode }),
 
   updateHead: (head) => {
@@ -309,6 +325,95 @@ export const usePageStore = create<PageStore>((set, get) => ({
       };
     });
   },
+
+  duplicateNode: (id) => {
+    set((state) => {
+      if (!state.document) return state;
+      const node = findNode(id, state.document.root);
+      if (!node) return state;
+      const clone = cloneNode(node);
+      clone.id = generateId();
+      const pos = findNodeParentAndIndex(id, state.document.root);
+      const newDoc = {
+        ...state.document,
+        root: insertNode(pos?.parent?.id ?? null, clone, state.document.root, pos ? pos.index + 1 : state.document.root.length),
+      };
+      return {
+        document: cloneNodeDoc(newDoc),
+        undoable: {
+          ...snapshot(state),
+          present: cloneNodeDoc(newDoc),
+        },
+      };
+    });
+  },
+
+  copyToClipboard: (id) => {
+    set((state) => {
+      const node = findNode(id, state.document?.root || []);
+      return { clipboard: node ? cloneNode(node) : null };
+    });
+  },
+
+  pasteAfterNode: (targetId) => {
+    set((state) => {
+      if (!state.document || !state.clipboard) return state;
+      const clipboardCopy = cloneNode(state.clipboard);
+      clipboardCopy.id = generateId();
+      const pos = findNodeParentAndIndex(targetId, state.document.root);
+      const insertIndex = pos ? pos.index + 1 : state.document.root.length;
+      const newDoc = {
+        ...state.document,
+        root: insertNode(pos?.parent?.id ?? null, clipboardCopy, state.document.root, insertIndex),
+      };
+      return {
+        document: cloneNodeDoc(newDoc),
+        undoable: {
+          ...snapshot(state),
+          present: cloneNodeDoc(newDoc),
+        },
+      };
+    });
+  },
+
+  parsysAdd: (type) => {
+    set((state) => {
+      if (!state.document) return state;
+      const def = getDefaultNode(type);
+      const node: PageNode = {
+        ...def,
+        id: generateId(),
+        props: { ...def.props },
+        order: 0,
+        parentId: null,
+      };
+      const newDoc = {
+        ...state.document,
+        root: insertNode(null, node, state.document.root, state.document.root.length),
+      };
+      return {
+        document: cloneNodeDoc(newDoc),
+        selectedNodeId: node.id,
+        undoable: {
+          ...snapshot(state),
+          present: cloneNodeDoc(newDoc),
+        },
+      };
+    });
+  },
+
+  addMediaAsset: (node) => {
+    set((state) => ({
+      mediaLibrary: [...state.mediaLibrary, cloneNode(node)],
+    }));
+  },
+
+  removeMediaAsset: (id) => {
+    set((state) => ({
+      mediaLibrary: state.mediaLibrary.filter((n) => n.id !== id),
+    }));
+  },
+  setOpenParsys: (open) => set({ openParsys: open }),
 }));
 
 function getDefaultNode(type: ComponentType): PageNode {

@@ -1,3 +1,5 @@
+import * as React from 'react';
+
 export type ComponentType =
   | 'container'
   | 'stack'
@@ -10,7 +12,10 @@ export type ComponentType =
   | 'columns'
   | 'code_block';
 
-export type PropType = 'text' | 'number' | 'color' | 'select' | 'richtext' | 'code';
+export type PropType =
+  'text' | 'number' | 'color' | 'select' | 'richtext' | 'code';
+
+export type PropEditMode = 'inline' | 'dialog' | 'both';
 
 export interface PropSchema {
   key: string;
@@ -18,6 +23,7 @@ export interface PropSchema {
   label: string;
   defaultValue?: unknown;
   options?: { label: string; value: string }[];
+  editMode?: PropEditMode;
 }
 
 export interface PageNode {
@@ -60,7 +66,13 @@ export interface ComponentDefinition {
   defaultProps: Record<string, unknown>;
   defaultChildren?: PageNode[];
   propsSchema: PropSchema[];
-  serialize: (props: SerializeProps, childrenHTML?: string) => string;
+  editMode?: PropEditMode;
+  dialogFields?: (props: SerializeProps, updateProps: (props: Record<string, unknown>) => void) => React.ReactNode;
+  serialize: (
+    props: SerializeProps,
+    childrenHTML?: string,
+    mode?: EditorMode
+  ) => string;
 }
 
 export interface SerializeProps {

@@ -45,10 +45,12 @@ export function useDropManager() {
     const activeData = active.data.current;
     const dropTargetId = String(over.id);
     const isNewNode = activeData?.isNew;
+    const media = activeData?.media as { props?: Record<string, unknown> } | undefined;
 
     if (isNewNode) {
       const type = activeData.type as ComponentType;
-      store.addNode(dropTargetId === '__root__' ? null : dropTargetId, type);
+      const props = media?.props;
+      store.addNode(dropTargetId === '__root__' ? null : dropTargetId, type, props);
       return;
     }
 

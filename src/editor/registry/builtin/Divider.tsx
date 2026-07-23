@@ -21,6 +21,7 @@ export const Divider: ComponentDefinition = {
         { label: 'Dashed', value: 'dashed' },
         { label: 'Dotted', value: 'dotted' },
       ],
+      editMode: 'dialog',
     },
   ],
   serialize: (props: SerializeProps) => `

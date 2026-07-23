@@ -7,7 +7,7 @@ export const Stack: ComponentDefinition = {
   category: 'Layout',
   defaultProps: { gap: 8 },
   propsSchema: [
-    { key: 'gap', type: 'number', label: 'Gap (px)', defaultValue: 8 },
+    { key: 'gap', type: 'number', label: 'Gap (px)', defaultValue: 8, editMode: 'dialog' },
   ],
   serialize: (props: SerializeProps, childrenHTML?: string) => `
     <div class="c-stack" style="gap:${props.gap as number}px; display:flex; flex-direction:column;">

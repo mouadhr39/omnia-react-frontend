@@ -12,9 +12,9 @@ export const CodeBlock: ComponentDefinition = {
   category: 'Advanced',
   defaultProps: { html: '', css: '', js: '' },
   propsSchema: [
-    { key: 'html', type: 'code', label: 'HTML', defaultValue: '' },
-    { key: 'css', type: 'code', label: 'CSS', defaultValue: '' },
-    { key: 'js', type: 'code', label: 'JS', defaultValue: '' },
+    { key: 'html', type: 'code', label: 'HTML', defaultValue: '', editMode: 'dialog' },
+    { key: 'css', type: 'code', label: 'CSS', defaultValue: '', editMode: 'dialog' },
+    { key: 'js', type: 'code', label: 'JS', defaultValue: '', editMode: 'dialog' },
   ],
   serialize: (props: SerializeProps) => {
     const cssBlock = props.css

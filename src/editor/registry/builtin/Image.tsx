@@ -9,10 +9,10 @@ export const Image: ComponentDefinition = {
   category: 'Media',
   defaultProps: { src: '', alt: 'Image', width: 400, height: 300 },
   propsSchema: [
-    { key: 'src', type: 'text', label: 'URL', defaultValue: '' },
-    { key: 'alt', type: 'text', label: 'Alt text', defaultValue: 'Image' },
-    { key: 'width', type: 'number', label: 'Width', defaultValue: 400 },
-    { key: 'height', type: 'number', label: 'Height', defaultValue: 300 },
+    { key: 'src', type: 'text', label: 'URL', defaultValue: '', editMode: 'dialog' },
+    { key: 'alt', type: 'text', label: 'Alt text', defaultValue: 'Image', editMode: 'dialog' },
+    { key: 'width', type: 'number', label: 'Width', defaultValue: 400, editMode: 'dialog' },
+    { key: 'height', type: 'number', label: 'Height', defaultValue: 300, editMode: 'dialog' },
   ],
   serialize: (props: SerializeProps) => `
     <img class="c-image" src="${sanitizeURL(props.src as string)}" alt="${escapeHTML(props.alt as string)}" width="${props.width as number}" height="${props.height as number}" style="max-width:100%; height:auto;" />

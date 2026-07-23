@@ -1,19 +1,25 @@
 import { usePageStore } from '@/editor/store/usePageStore';
 import { IframeContainer } from '@/editor/iframe/IframeContainer';
-import { Palette } from '@/editor/layout/Palette';
+import { EditorSidebar } from '@/editor/layout/EditorSidebar';
 import { PropertiesPanel } from '@/editor/layout/PropertiesPanel';
+import { ComponentPicker } from '@/editor/layout/ComponentPicker';
 import { Toolbar } from '@/editor/layout/Toolbar';
 import { useDropManager } from '@/editor/hooks/useDropManager';
 import { cn } from '@/lib/utils';
 import { DndContext, type DragStartEvent } from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { pointerWithin } from '@dnd-kit/core';
+import type { ComponentType } from '@/editor/types/page';
+import { ComponentDialog } from '@/editor/layout/ComponentDialog';
 
 export function WebEditorLayout() {
   const mode = usePageStore((s) => s.mode);
   const document = usePageStore((s) => s.document);
+  const openParsys = usePageStore((s) => s.openParsys);
+  const setOpenParsys = usePageStore((s) => s.setOpenParsys);
+  const parsysAdd = usePageStore((s) => s.parsysAdd);
   const createDocument = usePageStore((s) => s.createDocument);
- 
+
   const {
     sensors,
     activeId,
@@ -22,6 +28,11 @@ export function WebEditorLayout() {
     handleDragEnd,
     handleDragCancel,
   } = useDropManager();
+
+  const handleParsysSelect = (type: ComponentType) => {
+    parsysAdd(type);
+    setOpenParsys(false);
+  };
 
   if (!document) {
     return (
@@ -65,7 +76,7 @@ export function WebEditorLayout() {
               mode === 'preview' && 'hidden'
             )}
           >
-            <Palette />
+            <EditorSidebar />
           </aside>
           <main className="relative min-w-0 flex-1 bg-muted/20">
             <IframeContainer
@@ -94,6 +105,12 @@ export function WebEditorLayout() {
             <PropertiesPanel />
           </aside>
         </div>
+        <ComponentDialog />
+        <ComponentPicker
+          open={openParsys}
+          onOpenChange={setOpenParsys}
+          onSelect={handleParsysSelect}
+        />
       </DndContext>
     </div>
   );

@@ -6,11 +6,9 @@ import { useDraggable } from '@dnd-kit/core';
 function DraggableItem({
   type,
   label,
-  icon,
 }: {
   type: ComponentType;
   label: string;
-  icon: string;
 }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: `palette-${type}`,
@@ -32,7 +30,7 @@ function DraggableItem({
       className="flex cursor-grab items-center gap-2 rounded-md border bg-background p-2 transition-colors hover:border-primary/50 active:cursor-grabbing"
     >
       <span className="w-5 text-xs tracking-wide text-muted-foreground uppercase">
-        {/* {icon} */}
+        {label.charAt(0)}
       </span>
       <span className="text-sm">{label}</span>
     </div>
@@ -62,7 +60,6 @@ export function Palette() {
                 key={item.type}
                 type={item.type}
                 label={item.label}
-                icon={item.icon}
               />
             ))}
           </div>

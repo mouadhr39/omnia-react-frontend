@@ -8,9 +8,9 @@ export const Container: ComponentDefinition = {
   category: 'Layout',
   defaultProps: { gap: 16, padding: 16, background: '#ffffff' },
   propsSchema: [
-    { key: 'gap', type: 'number', label: 'Gap (px)', defaultValue: 16 },
-    { key: 'padding', type: 'number', label: 'Padding (px)', defaultValue: 16 },
-    { key: 'background', type: 'color', label: 'Background', defaultValue: '#ffffff' },
+    { key: 'gap', type: 'number', label: 'Gap (px)', defaultValue: 16, editMode: 'dialog' },
+    { key: 'padding', type: 'number', label: 'Padding (px)', defaultValue: 16, editMode: 'dialog' },
+    { key: 'background', type: 'color', label: 'Background', defaultValue: '#ffffff', editMode: 'dialog' },
   ],
   serialize: (props: SerializeProps, childrenHTML?: string) => `
     <div class="c-container" style="gap:${props.gap as number}px; padding:${props.padding as number}px; background:${escapeHTML(props.background as string)}; display:flex; flex-direction:column;">
