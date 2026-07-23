@@ -4,73 +4,91 @@
         "icon": "Bot",
         "version": "1.0.0"
     },
-    "main": {
-        "label": "Store Management",
-        "items": [
-            {
-                "title": "Projects",
-                "url": "/projects",
-                "icon": "Database",
-                "active": true,
-                "items": [
-                    {
-                        "title": "Overview",
-                        "url": "/projects/overview",
-                        "active": true
-                    },
-                    {
-                        "title": "Connectors",
-                        "url": "/projects/connectors"
-                    },
-                    {
-                        "title": "Design",
-                        "url": "/projects/modeling"
-                    },
-                    {
-                        "title": "Schema Designer",
-                        "url": "/projects/modeler"
-                    },
-                    {
-                        "title": "Data Entry",
-                        "url": "/projects/dataentry"
-                    }
-                ]
-            },
-            {
-                "title": "Stores",
-                "url": "/stores",
-                "icon": "Store",
-                "active": false,
-                "items": [
-                    {
-                        "title": "Overview",
-                        "url": "/store/orders"
-                    },
-                    {
-                        "title": "Orders",
-                        "url": "/store/orders"
-                    },
-                    {
-                        "title": "Products",
-                        "url": "/store/products"
-                    },
-                    {
-                        "title": "categories",
-                        "url": "/store/categories"
-                    },
-                    {
-                        "title": "Discounts",
-                        "url": "/store/discounts"
-                    },
-                    {
-                        "title": "Collections",
-                        "url": "/store/collections"
-                    }
-                ]
-            }
-        ]
-    },
+    "sections": [
+        {
+            "label": "",
+            "level": 2,
+            "items": [
+                {
+                    "title": "Project",
+                    "url": "/project",
+                    "icon": "Dashboard",
+                   
+                    "items": [
+                        {
+                            "title": "Overview",
+                            "url": "/project/overview"
+                            
+                        },
+                        {
+                            "title": "Online Stores",
+                            "url": "/project/online-stores"
+                        }
+                    ]
+                },
+                {
+                    "title": "Web Design",
+                    "url": "/web",
+                    "icon": "Frame",
+                    "items": [
+                        
+                        {
+                            "title": "Page Editor",
+                            "url": "/web/editor"
+                        },
+                        {
+                            "title": "Templates",
+                            "url": "/web/templates"
+                        },
+                        {
+                            "title": "Sites",
+                            "url": "/web/sites"
+                        }
+                    ]
+                },
+                                {
+                    "title": "Store Modeling",
+                    "url": "/store",
+                    "icon": "Store",
+                    "items": [
+                        {
+                            "title": "Data & Schemas",
+                            "url": "/store/data-structures"
+                        },
+                        {
+                            "title": "DB Designer",
+                            "url": "/store/db-design"
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+
     "footer": {
-        "label": "© 2026"
+        "label": "Omnia Platform © 2026",
+        "sections": [ {
+            "label": "Platform",
+            "level": 1,
+            "items": [
+               
+                {
+                    "title": "Permissions",
+                    "url": "/permissions",
+                    "icon": "UserCog"
+                },
+                
+                {
+                    "title": "Databases",
+                    "url": "/databases",
+                    "icon": "Database"
+                },
+                 {
+                    "title": "Settings",
+                    "url": "/settings",
+                    "icon": "Settings"
+                }
+            ]
+        }]
     }
 }

@@ -131,8 +131,8 @@ const Header: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
         <h1>Omnia v. 1.0</h1>
       </div>
       <div className="flex flex-row items-center justify-center">
-        <DropDownMenuCreate />
-        <CreateProjectDialog triggerClassName="margin-1 m-4" />
+        
+       
         <Separator orientation="vertical" className="m-4 gap-4 text-white" />
         <Button
           variant="ghost"

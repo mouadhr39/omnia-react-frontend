@@ -1,0 +1,22 @@
+import { registerComponent } from './components';
+import { Container } from './builtin/Container';
+import { Stack } from './builtin/Stack';
+import { Heading } from './builtin/Heading';
+import { Text } from './builtin/Text';
+import { Image } from './builtin/Image';
+import { Button } from './builtin/Button';
+import { Divider } from './builtin/Divider';
+import { Spacer } from './builtin/Spacer';
+import { Columns } from './builtin/Columns';
+import { CodeBlock } from './builtin/CodeBlock';
+
+registerComponent(Container);
+registerComponent(Stack);
+registerComponent(Heading);
+registerComponent(Text);
+registerComponent(Image);
+registerComponent(Button);
+registerComponent(Divider);
+registerComponent(Spacer);
+registerComponent(Columns);
+registerComponent(CodeBlock);
