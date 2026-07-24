@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/sidebar';
 
 import { ResolvedIcon, IconMap } from '@/lib/iconutils';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Config from '@/config/Sidebar.json';
 import { GalleryVerticalEnd } from 'lucide-react';
 import Header from '@/components/Header';
@@ -101,16 +101,8 @@ const SideBarMenuItem: React.FC<{
   active?: boolean;
   url: string;
 }> = ({ title, active, url }) => {
-  const [openItem, setOpenItem] = useState(active || false);
   const location = useLocation();
-
-  useEffect(() => {
-    if (location.pathname.endsWith(url)) {
-      setOpenItem(true);
-    } else {
-      setOpenItem(false);
-    }
-  });
+  const openItem = active || location.pathname.endsWith(url);
   return (
     <SidebarMenuSubItem>
       <SidebarMenuSubButton
@@ -145,18 +137,11 @@ const SideBarButtonItem: React.FC<{
   url: string;
   icon: string;
 }> = ({ title, active = false, url, icon }) => {
-  const [isActive, setIsActive] = useState(active);
   const location = useLocation();
-  useEffect(() => {
-    if (location.pathname.endsWith(url)) {
-      setIsActive(true);
-    } else {
-      setIsActive(false);
-    }
-  });
+  const isActive = active || location.pathname.endsWith(url);
   return (
     <SidebarMenuButton
-      isActive={active || false}
+      isActive={isActive}
       render={
         <NavLink
           key={url}
@@ -176,32 +161,33 @@ const SideBarButtonItem: React.FC<{
  *
  * @param group
  */
-const SideBarGroup: React.FC<SideBarSectionGroupProps> = ({
+const SideBarGroup: React.FC<
+  SideBarSectionGroupProps & {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+  }
+> = ({
   title,
   icon,
   items,
-  url,
-  active,
+  open,
+  onOpenChange,
 }) => {
-  const location = useLocation();
-  const isActive = location.pathname.startsWith(url);
-  const [openGroup, setOpenGroup] = useState<boolean>(isActive);
-
   return (
     <Collapsible
       key={title}
-      defaultOpen={isActive}
-      onOpenChange={setOpenGroup}
+      open={open}
+      onOpenChange={onOpenChange}
       render={<SidebarMenuItem />}
       className="group/collapsible"
     >
       <CollapsibleTrigger
         render={
           <SidebarMenuButton
-            isActive={openGroup}
+            isActive={open}
             tooltip={title}
             className={
-              openGroup
+              open
                 ? 'bg-sidebar-accent text-sidebar-accent-foreground [&_*]:font-semibold'
                 : ''
             }
@@ -235,6 +221,18 @@ const SideBarGroup: React.FC<SideBarSectionGroupProps> = ({
 };
 
 const SideBarSection: React.FC<SideBarSectionProps> = (props) => {
+  const location = useLocation();
+  const groups =
+    props.level === 1
+      ? []
+      : (props.items as Array<SideBarSectionGroupProps>);
+  const activeGroupUrl = groups.find((group) =>
+    location.pathname.startsWith(group.url),
+  )?.url;
+  const [openGroupUrl, setOpenGroupUrl] = useState<string | undefined>(
+    activeGroupUrl,
+  );
+
   if (props.level === 1) {
     const items = props.items as Array<SideBarSectionItemProps>;
     return (
@@ -260,8 +258,6 @@ const SideBarSection: React.FC<SideBarSectionProps> = (props) => {
     );
   }
 
-  const groups = props.items as Array<SideBarSectionGroupProps>;
-
   return (
     <SidebarContent>
       <SidebarGroup key={props.label}>
@@ -276,6 +272,10 @@ const SideBarSection: React.FC<SideBarSectionProps> = (props) => {
                 icon={group.icon}
                 active={group.active}
                 items={group.items}
+                open={openGroupUrl === group.url}
+                onOpenChange={(open) =>
+                  setOpenGroupUrl(open ? group.url : undefined)
+                }
               />
             ))}
           </SidebarMenu>
@@ -301,6 +301,8 @@ const SideBarFooter: React.FC<SideBarFooterProps> = ({ label, children }) => {
 };
 
 const SideBar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const location = useLocation();
+
   return (
     <SidebarProvider>
       {/* sidebar nav */}
@@ -308,7 +310,7 @@ const SideBar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <SideBarHeader title="Omnia" version="1.0.0" />
         {Config.sections.map((section) => (
           <SideBarSection
-            key={section.label}
+            key={`${section.label}-${location.pathname}`}
             label={section.label}
             level={section.level}
             items={section.items}
@@ -317,7 +319,7 @@ const SideBar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <SideBarFooter label={Config.footer.label}>
           {Config.footer.sections.map((section) => (
             <SideBarSection
-              key={section.label}
+              key={`${section.label}-${location.pathname}`}
               label={section.label}
               level={section.level}
               items={section.items}
