@@ -10,7 +10,6 @@ import {
   SidebarProvider,
   SidebarInset,
   SidebarGroupContent,
-  SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
 
@@ -43,7 +42,6 @@ import Config from '@/config/Sidebar.json';
 import { GalleryVerticalEnd } from 'lucide-react';
 import Header from '@/components/Header';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Separator } from './ui/separator';
 
 const SS_SIDEBAR_STATE: string = 'sidebar::state';
 
@@ -75,6 +73,7 @@ interface SideBarSectionProps {
   label: string;
   level: number;
   items: Array<SideBarSectionGroupProps | SideBarSectionItemProps>;
+  className?: string;
 }
 
 interface SideBarFooterProps {
@@ -95,13 +94,13 @@ const SideBarHeader: React.FC<SideBarHeaderProps> = ({
     <SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton size="lg">
+          <SidebarMenuButton size="default">
             <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-              <GalleryVerticalEnd className="size-4" />
+              <GalleryVerticalEnd className="size-1" />
             </div>
-            <div className="flex flex-col gap-0.5 leading-none">
-              <span className="font-medium">{title}</span>
-              <span className="font-small">{version}</span>
+            <div className="flex flex-row gap-1 leading-none">
+              <span className="font-larger">{title}</span>
+              <span className="font-small">v.{version}</span>
             </div>
           </SidebarMenuButton>
         </SidebarMenuItem>
@@ -314,9 +313,11 @@ const SideBarSection: React.FC<SideBarSectionProps> = (props) => {
   if (props.level === 1) {
     const items = props.items as Array<SideBarSectionItemProps>;
     return (
-      <SidebarContent>
-        <SidebarGroup key={props.label}>
-          <SidebarGroupLabel>{props.label}</SidebarGroupLabel>
+      <SidebarContent className={props.className}>
+        <SidebarGroup key={props.label} className="p-0">
+          {props.label !== '' ? (
+            <SidebarGroupLabel>{props.label}</SidebarGroupLabel>
+          ) : null}
           <SidebarGroupContent className="flex-end">
             <SidebarMenu>
               {items.map((item) => (
@@ -337,9 +338,11 @@ const SideBarSection: React.FC<SideBarSectionProps> = (props) => {
   }
 
   return (
-    <SidebarContent>
+    <SidebarContent className={props.className}>
       <SidebarGroup key={props.label}>
-        <SidebarGroupLabel>{props.label}</SidebarGroupLabel>
+        {props.label !== '' ? (
+          <SidebarGroupLabel>{props.label}</SidebarGroupLabel>
+        ) : null}
         <SidebarGroupContent>
           <SidebarMenu>
             {groups.map((group) => (
@@ -384,34 +387,39 @@ const SideBar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <SidebarProvider defaultOpen={state === 'expanded' ? true : false}>
-      <Sidebar collapsible="icon">
+      <Sidebar
+        className="flex justify-items-stretch border-none"
+        collapsible="icon"
+      >
         <SideBarHeader title="Omnia" version="1.0.0" />
-        <Separator />
+
         {Config.sections.map((section) => (
           <SideBarSection
             key={`${section.label}-${location.pathname}`}
             label={section.label}
             level={section.level}
             items={section.items}
+            className="mt-10"
           />
         ))}
-        <SidebarSeparator />
-        {Config.footer.sections.map((section) => (
-          <SideBarSection
-            key={`${section.label}-${location.pathname}`}
-            label={section.label}
-            level={section.level}
-            items={section.items}
-          />
-        ))}
-        <SideBarFooter label={Config.footer.label}></SideBarFooter>
+
+        <SideBarFooter label={Config.footer.label}>
+          {Config.footer.sections.map((section) => (
+            <SideBarSection
+              key={`${section.label}-${location.pathname}`}
+              label={section.label}
+              level={section.level}
+              items={section.items}
+            />
+          ))}
+        </SideBarFooter>
         <SidebarRail />
       </Sidebar>
-      <SidebarInset>
-        
+      <SidebarInset className="bg-sidebar">
         <Header />
-        
-        {children}
+        <div className="flex min-h-0 flex-1 flex-col rounded-tl-[1rem] border-t border-l border-sidebar-border bg-background">
+          {children}
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

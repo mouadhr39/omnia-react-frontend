@@ -60,15 +60,15 @@ const SettingsDropdownMenu: React.FC = () => {
 
 const Header: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   return (
-    <header className="flex h-14 shrink-0 flex-row items-center justify-between gap-2 border-b p-2">
+    <header className="flex h-12 shrink-0 flex-row items-center justify-between gap-2  p-3 bg-sidebar">
       <div className="flex flex-row items-center justify-center">
         <SidebarTrigger variant="ghost" size="icon-lg" className="m-1 p-4" />
       </div>
       <div className="m-4 flex">
-        <h1>Omnia v. 1.0</h1>
+        
       </div>
       <div className="flex flex-row items-center justify-center">
-        <Separator orientation="vertical" className="m-4 gap-4 text-white" />
+        
         <Button
           variant="ghost"
           size="icon-lg"
