@@ -15,14 +15,26 @@ interface ComponentPickerProps {
   onSelect: (type: ComponentType) => void;
 }
 
-function PickerItem({ type, label, category, onSelect }: { type: ComponentType; label: string; category: string; onSelect: (type: ComponentType) => void }) {
+function PickerItem({
+  type,
+  label,
+  category,
+  onSelect,
+}: {
+  type: ComponentType;
+  label: string;
+  category: string;
+  onSelect: (type: ComponentType) => void;
+}) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: `picker-${type}`,
     data: { isNew: true, type },
   });
 
   const style: React.CSSProperties = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transform: transform
+      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+      : undefined,
   };
 
   return (
@@ -45,7 +57,11 @@ function PickerItem({ type, label, category, onSelect }: { type: ComponentType; 
   );
 }
 
-export function ComponentPicker({ open, onOpenChange, onSelect }: ComponentPickerProps) {
+export function ComponentPicker({
+  open,
+  onOpenChange,
+  onSelect,
+}: ComponentPickerProps) {
   const categories = useMemo(() => {
     const comps = Array.from(componentRegistry.values());
     return comps.reduce<Record<string, typeof comps>>((acc, c) => {
@@ -62,7 +78,7 @@ export function ComponentPicker({ open, onOpenChange, onSelect }: ComponentPicke
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[70vh] overflow-hidden p-0 gap-0 sm:max-w-md">
+      <DialogContent className="max-h-[70vh] gap-0 overflow-hidden p-0 sm:max-w-md">
         <DialogHeader className="px-4 pt-4 pb-2">
           <DialogTitle className="text-base">Insert Component</DialogTitle>
         </DialogHeader>

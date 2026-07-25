@@ -17,7 +17,7 @@ function ComponentListItem({ node }: { node: PageNode }) {
 
   return (
     <div
-      className={`group flex items-center gap-2 rounded-md px-2 py-1.5 text-xs cursor-pointer transition-colors ${
+      className={`group flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors ${
         selectedNodeId === node.id
           ? 'bg-primary/10 text-primary'
           : 'hover:bg-muted'
@@ -25,13 +25,13 @@ function ComponentListItem({ node }: { node: PageNode }) {
       onClick={() => selectNode(node.id)}
     >
       <GripVertical className="size-3 shrink-0 text-muted-foreground" />
-      <span className="truncate flex-1">{typeLabel}</span>
+      <span className="flex-1 truncate">{typeLabel}</span>
       <button
         onClick={(e) => {
           e.stopPropagation();
           removeNode(node.id);
         }}
-        className="size-4 flex items-center justify-center rounded hover:bg-destructive/10 hover:text-destructive"
+        className="flex size-4 items-center justify-center rounded hover:bg-destructive/10 hover:text-destructive"
       >
         <X className="size-3" />
       </button>
@@ -46,7 +46,9 @@ function MediaItem({ node, onAdd }: { node: PageNode; onAdd: () => void }) {
   });
 
   const style: React.CSSProperties = {
-    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    transform: transform
+      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+      : undefined,
   };
 
   return (
@@ -63,7 +65,9 @@ function MediaItem({ node, onAdd }: { node: PageNode; onAdd: () => void }) {
         alt={node.props.alt as string}
         className="size-8 shrink-0 rounded object-cover"
       />
-      <span className="truncate text-xs flex-1">{node.props.alt as string}</span>
+      <span className="flex-1 truncate text-xs">
+        {node.props.alt as string}
+      </span>
       <Button
         variant="ghost"
         size="icon"
@@ -111,7 +115,7 @@ export function EditorSidebar() {
               Page Components ({flattenedComponents.length})
             </h3>
             {flattenedComponents.length === 0 ? (
-              <p className="text-xs text-muted-foreground italic py-2">
+              <p className="py-2 text-xs text-muted-foreground italic">
                 No components on page yet.
               </p>
             ) : (
@@ -131,7 +135,11 @@ export function EditorSidebar() {
             </h3>
             <div className="grid gap-2">
               {mediaAssets.map((asset) => (
-                <MediaItem key={asset.id} node={asset.node} onAdd={() => handleAddFromMedia(asset.node)} />
+                <MediaItem
+                  key={asset.id}
+                  node={asset.node}
+                  onAdd={() => handleAddFromMedia(asset.node)}
+                />
               ))}
             </div>
           </section>

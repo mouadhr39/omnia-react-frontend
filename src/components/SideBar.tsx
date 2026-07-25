@@ -10,6 +10,8 @@ import {
   SidebarProvider,
   SidebarInset,
   SidebarGroupContent,
+  SidebarSeparator,
+  useSidebar,
 } from '@/components/ui/sidebar';
 
 import {
@@ -26,12 +28,24 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
 import { ResolvedIcon, IconMap } from '@/lib/iconutils';
 import { useState } from 'react';
 import Config from '@/config/Sidebar.json';
 import { GalleryVerticalEnd } from 'lucide-react';
 import Header from '@/components/Header';
 import { NavLink, useLocation } from 'react-router-dom';
+import { Separator } from './ui/separator';
+
+const SS_SIDEBAR_STATE: string = 'sidebar::state';
 
 interface SideBarHeaderProps {
   title: string;
@@ -74,6 +88,9 @@ const SideBarHeader: React.FC<SideBarHeaderProps> = ({
   title,
   version = 'v1.0.0',
 }) => {
+  const { state } = useSidebar();
+  sessionStorage.setItem(SS_SIDEBAR_STATE, state);
+
   return (
     <SidebarHeader>
       <SidebarMenu>
@@ -131,6 +148,40 @@ const SideBarMenuItem: React.FC<{
   );
 };
 
+const SideBarDropDownItem: React.FC<{
+  title: string;
+  active?: boolean;
+  url: string;
+}> = ({ title, active, url }) => {
+  const location = useLocation();
+  const openItem = active || location.pathname.endsWith(url);
+
+  return (
+    <DropdownMenuItem
+      key={title}
+      render={
+        <NavLink
+          to={url}
+          className={`${openItem ? 'bg-sidebar-secondary text-sidebar-outline-foreground my-1' : ''}`}
+        />
+      }
+    >
+      {openItem ? (
+        <svg
+          xmlns="http://w3.org"
+          viewBox="0 0 24 24"
+          className="h-5 w-5 fill-primary"
+        >
+          <circle cx="12" cy="12" r="4" />
+        </svg>
+      ) : null}
+      <span className={openItem ? 'underlined font-semibold' : ''}>
+        {title}
+      </span>
+    </DropdownMenuItem>
+  );
+};
+
 const SideBarButtonItem: React.FC<{
   title: string;
   active?: boolean;
@@ -166,13 +217,46 @@ const SideBarGroup: React.FC<
     open: boolean;
     onOpenChange: (open: boolean) => void;
   }
-> = ({
-  title,
-  icon,
-  items,
-  open,
-  onOpenChange,
-}) => {
+> = ({ title, icon, items, open, onOpenChange }) => {
+  const { isMobile, state } = useSidebar();
+  const isCollapsed = state === 'collapsed' && !isMobile;
+  const triggerClassName = open
+    ? 'bg-sidebar-accent text-sidebar-accent-foreground [&_*]:font-semibold'
+    : '';
+
+  if (isCollapsed) {
+    return (
+      <SidebarMenuItem>
+        <DropdownMenu modal={false}>
+          <DropdownMenuTrigger
+            render={
+              <SidebarMenuButton
+                isActive={open}
+                aria-label={title}
+                className={triggerClassName}
+              />
+            }
+          >
+            {icon && IconMap[icon] && <ResolvedIcon name={icon} />}
+            <span>{title}</span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="right" align="start" sideOffset={8}>
+            <DropdownMenuGroup>
+              <DropdownMenuLabel>{title}</DropdownMenuLabel>
+              {items.map((item) => (
+                <SideBarDropDownItem
+                  title={item.title}
+                  active={item.active}
+                  url={item.url}
+                />
+              ))}
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    );
+  }
+
   return (
     <Collapsible
       key={title}
@@ -186,11 +270,7 @@ const SideBarGroup: React.FC<
           <SidebarMenuButton
             isActive={open}
             tooltip={title}
-            className={
-              open
-                ? 'bg-sidebar-accent text-sidebar-accent-foreground [&_*]:font-semibold'
-                : ''
-            }
+            className={triggerClassName}
           />
         }
       >
@@ -223,14 +303,12 @@ const SideBarGroup: React.FC<
 const SideBarSection: React.FC<SideBarSectionProps> = (props) => {
   const location = useLocation();
   const groups =
-    props.level === 1
-      ? []
-      : (props.items as Array<SideBarSectionGroupProps>);
+    props.level === 1 ? [] : (props.items as Array<SideBarSectionGroupProps>);
   const activeGroupUrl = groups.find((group) =>
-    location.pathname.startsWith(group.url),
+    location.pathname.startsWith(group.url)
   )?.url;
   const [openGroupUrl, setOpenGroupUrl] = useState<string | undefined>(
-    activeGroupUrl,
+    activeGroupUrl
   );
 
   if (props.level === 1) {
@@ -302,12 +380,13 @@ const SideBarFooter: React.FC<SideBarFooterProps> = ({ label, children }) => {
 
 const SideBar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
+  const state = sessionStorage.getItem(SS_SIDEBAR_STATE);
 
   return (
-    <SidebarProvider>
-      {/* sidebar nav */}
+    <SidebarProvider defaultOpen={state === 'expanded' ? true : false}>
       <Sidebar collapsible="icon">
         <SideBarHeader title="Omnia" version="1.0.0" />
+        <Separator />
         {Config.sections.map((section) => (
           <SideBarSection
             key={`${section.label}-${location.pathname}`}
@@ -316,22 +395,22 @@ const SideBar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             items={section.items}
           />
         ))}
-        <SideBarFooter label={Config.footer.label}>
-          {Config.footer.sections.map((section) => (
-            <SideBarSection
-              key={`${section.label}-${location.pathname}`}
-              label={section.label}
-              level={section.level}
-              items={section.items}
-            />
-          ))}
-        </SideBarFooter>
+        <SidebarSeparator />
+        {Config.footer.sections.map((section) => (
+          <SideBarSection
+            key={`${section.label}-${location.pathname}`}
+            label={section.label}
+            level={section.level}
+            items={section.items}
+          />
+        ))}
+        <SideBarFooter label={Config.footer.label}></SideBarFooter>
         <SidebarRail />
       </Sidebar>
       <SidebarInset>
-        {/* header nav */}
+        
         <Header />
-        {/* content */}
+        
         {children}
       </SidebarInset>
     </SidebarProvider>
