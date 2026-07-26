@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 import { Button } from '@/components/ui/button';
-import { Separator } from '@base-ui/react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { ResolvedIcon } from '@/lib/iconutils';
 

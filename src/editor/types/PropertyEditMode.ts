@@ -1,0 +1,1 @@
+export type PropertyEditMode = 'inline' | 'dialog' | 'both';

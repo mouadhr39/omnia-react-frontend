@@ -417,7 +417,7 @@ const SideBar: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       </Sidebar>
       <SidebarInset className="bg-sidebar">
         <Header />
-        <div className="flex min-h-0 flex-1 flex-col rounded-tl-[1rem] border-t border-l border-sidebar-border bg-background">
+        <div className="flex min-h-0 flex-1 flex-col rounded-tl-[1rem] border-t border-l border-sidebar-border bg-muted">
           {children}
         </div>
       </SidebarInset>

@@ -19,7 +19,7 @@ export function Toolbar() {
   const canRedo = undoable.future.length > 0;
 
   return (
-    <div className="flex items-center justify-between border-b px-4 py-2 bg-background">
+    <div className="flex items-center justify-between border-b px-4 py-2 bg-muted">
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" onClick={undo} disabled={!canUndo} title="Undo (Ctrl+Z)">
           <Undo2 className="h-4 w-4" />

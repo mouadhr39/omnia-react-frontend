@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-
+//import { useEffect } from 'react';
+/*
 export function IframeBridge() {
   useEffect(() => {
     const handler = (e: MessageEvent) => {
@@ -27,3 +27,4 @@ export function IframeBridge() {
 
   return null;
 }
+*/

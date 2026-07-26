@@ -1,4 +1,4 @@
-import Base from '@/layouts/Base';
+/*import Base from '@/layouts/Base';
 
 import { ChartRadialGrid } from '@/components/chart/chart.tsx';
 import { PolarGrid, RadialBar, RadialBarChart } from 'recharts';
@@ -31,9 +31,9 @@ import {
   CardDescription,
   CardTitle,
 } from '@/components/ui/card';
-import { CreateProjectView } from '@/components/view/CreateProjectView';
-
-const MiniCard: React.FC<{}> = (props) => {
+import { CreateProjectView } from '@/components/view/CreateProjectView';*/
+/*
+const MiniCard: React.FC<{}> = () => {
   <Card className="@container/card">
     <CardHeader>
       <CardDescription>Total Revenue</CardDescription>
@@ -59,7 +59,7 @@ const MiniCard: React.FC<{}> = (props) => {
 };
 
 export const ProjectOverview: React.FC = () => {
-  const chartData = [
+ /* const chartData = [
     { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
     { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
     { browser: 'firefox', visitors: 187, fill: 'var(--color-firefox)' },
@@ -250,7 +250,7 @@ export const ProjectOverview: React.FC = () => {
           </div>
         
         </div>
-      </div>*/}
+      </div>*}
     </Base>
   );
-};
+};*/

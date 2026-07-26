@@ -58,7 +58,7 @@ export function WebEditorLayout() {
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full flex-col mt-1 ml-1">
       <Toolbar />
       <DndContext
         sensors={sensors}

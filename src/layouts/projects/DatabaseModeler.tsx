@@ -1,4 +1,4 @@
-import Base from "@/layouts/Base"
+/*import Base from "@/layouts/Base"
 import { CreateProjectView } from "@/components/view/CreateProjectView"
 import { useState } from "react"
 import { z } from "zod"
@@ -71,7 +71,7 @@ const ProjectWizard: React.FC = () => {
     sessionStorage.setItem("omnia.projectConfig", JSON.stringify(projectConfig))
     Notify({ message: "Project created successfully.", type: "success" })
   }
-
+/*
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -316,4 +316,4 @@ const ProjectWizard: React.FC = () => {
   )
 }
 
-export default ProjectWizard
+export default ProjectWizard*/

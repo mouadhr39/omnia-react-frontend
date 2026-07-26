@@ -1,4 +1,4 @@
-import { type PageNode } from '@/editor/types/page';
+import { PageNode } from '@/editor/types';
 
 export function cloneNode(node: PageNode): PageNode {
   return {
@@ -7,7 +7,9 @@ export function cloneNode(node: PageNode): PageNode {
     children: node.children.map(cloneNode),
     design: {
       ...node.design,
-      attributes: node.design.attributes ? { ...node.design.attributes } : undefined,
+      attributes: node.design.attributes
+        ? { ...node.design.attributes }
+        : undefined,
     },
   };
 }

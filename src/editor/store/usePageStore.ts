@@ -1,24 +1,24 @@
 import { create } from 'zustand';
 import {
-  type PageDocument,
-  type PageNode,
-  type EditorMode,
-  type ComponentType,
-} from '@/editor/types/page';
-import { generateId } from '@/editor/utils/generateId';
-import { cloneNode } from '@/editor/utils/cloneNode';
-import { insertNode, moveNode, removeNode, findNode, findNodeParentAndIndex } from '@/editor/utils/insertNode';
-import { type StorageAdapter } from '@/editor/types/page';
-import { localStorageAdapter } from '@/editor/storage/localStorageAdapter';
-
-export interface UndoableState {
-  past: PageDocument[];
-  present: PageDocument | null;
-  future: PageDocument[];
-}
+  Document,
+  PageNode,
+  EditorMode,
+  ComponentType,
+  UndoableState
+} from '@/editor/types';
+import { createSnapshot, cloneDocument, generateId, cloneNode } from '@/editor/utils';
+import {
+  insertNode,
+  moveNode,
+  removeNode,
+  findNode,
+  findNodeParentAndIndex,
+} from '@/editor/utils/insertNode';
+import { StorageAdapter } from '@/editor/storage/storageAdapter';
+import { localStorageManager } from '@/editor/storage/localStorageManager';
 
 export interface PageStore {
-  document: PageDocument | null;
+  document: Document | null;
   lastDocId: string | null;
   selectedNodeId: string | null;
   dialogNodeId: string | null;
@@ -34,7 +34,7 @@ export interface PageStore {
   createDocument: (title: string) => Promise<void>;
   saveDocument: () => Promise<void>;
 
-  addNode: (
+ /* addNode: (
     parentId: string | null,
     type: ComponentType,
     props?: Record<string, unknown>,
@@ -45,24 +45,24 @@ export interface PageStore {
   updateNodeProps: (id: string, props: Record<string, unknown>) => void;
   updateNodeDesign: (id: string, design: Partial<PageNode['design']>) => void;
   duplicateNode: (id: string) => void;
-  pasteAfterNode: (targetId: string) => void;
+  pasteAfterNode: (targetId: string) => void;*/
   copyToClipboard: (id: string) => void;
   parsysAdd: (type: ComponentType) => void;
   addMediaAsset: (node: PageNode) => void;
   removeMediaAsset: (id: string) => void;
   setOpenParsys: (open: boolean) => void;
 
-  selectNode: (id: string | null) => void;
-  setDialogNodeId: (id: string | null) => void;
+ // selectNode: (id: string | null) => void;
+ // setDialogNodeId: (id: string | null) => void;
   setMode: (mode: EditorMode) => void;
 
-  updateHead: (head: Partial<PageDocument['head']>) => void;
+  updateHead: (head: Partial<Document['head']>) => void;
   updateTitle: (title: string) => void;
 
   undo: () => void;
   redo: () => void;
 }
-
+/*
 const HISTORY_LIMIT = 50;
 
 function snapshot(state: PageStore): UndoableState {
@@ -70,7 +70,7 @@ function snapshot(state: PageStore): UndoableState {
   const past = [
     ...state.undoable.past,
     current ? cloneNodeDoc(current) : null,
-  ].filter(Boolean) as PageDocument[];
+  ].filter(Boolean) as Document[];
   return {
     past: past.slice(-HISTORY_LIMIT),
     present: current ? cloneNodeDoc(current) : null,
@@ -78,7 +78,7 @@ function snapshot(state: PageStore): UndoableState {
   };
 }
 
-function cloneNodeDoc(doc: PageDocument): PageDocument {
+function cloneNodeDoc(doc: Document): Document {
   return {
     ...doc,
     root: doc.root.map((n) => cloneNode(n)),
@@ -89,11 +89,10 @@ function cloneNodeDoc(doc: PageDocument): PageDocument {
       meta: { ...doc.head.meta },
     },
   };
-}
-
+}*/
 
 export const usePageStore = create<PageStore>((set, get) => ({
-  document: localStorageAdapter.loadLastPage(),
+  document: localStorageManager.loadLastPage(),
   selectedNodeId: null,
   dialogNodeId: null,
   lastDocId: null,
@@ -102,15 +101,14 @@ export const usePageStore = create<PageStore>((set, get) => ({
   isSaving: false,
   lastSaved: null,
   undoable: { past: [], present: null, future: [] },
-  adapter: localStorageAdapter,
+  adapter: localStorageManager,
   clipboard: null,
   mediaLibrary: [],
   openParsys: false,
 
-
   loadDocument: async (id: string) => {
     const doc = await get().adapter.loadPage(id);
-    console.log("Doc loaded " + doc);
+    console.log('Doc loaded ' + doc);
     if (doc) {
       set({
         document: doc,
@@ -122,7 +120,7 @@ export const usePageStore = create<PageStore>((set, get) => ({
 
   createDocument: async (title: string) => {
     const now = Date.now();
-    const doc: PageDocument = {
+    const doc: Document = {
       id: generateId(),
       title,
       createdAt: now,
@@ -154,109 +152,7 @@ export const usePageStore = create<PageStore>((set, get) => ({
     });
   },
 
-  addNode: (parentId, type, props, index) => {
-    set((state) => {
-      if (!state.document) return state;
-      
-      const def = getDefaultNode(type);
-      const node: PageNode = {
-        ...def,
-        id: generateId(),
-        props: { ...def.props, ...props },
-        order: 0,
-        parentId,
-      };
-      const newDoc = {
-        ...state.document,
-        root: insertNode(parentId, node, state.document.root, index),
-      };
-      console.log("adding node: ");
-      return {
-        document: cloneNodeDoc(newDoc),
-        undoable: {
-          ...snapshot(state),
-          present: cloneNodeDoc(newDoc),
-        },
-      };
-    });
-  },
 
-  removeNode: (id) => {
-    set((state) => {
-      if (!state.document) return state;
-      const newDoc = {
-        ...state.document,
-        root: removeNode(id, state.document.root),
-      };
-      return {
-        document: cloneNodeDoc(newDoc),
-        selectedNodeId:
-          state.selectedNodeId === id ? null : state.selectedNodeId,
-        undoable: {
-          ...snapshot(state),
-          present: cloneNodeDoc(newDoc),
-        },
-      };
-    });
-  },
-
-  moveNode: (id, newParentId, newIndex) => {
-    set((state) => {
-      if (!state.document) return state;
-      const newDoc = {
-        ...state.document,
-        root: moveNode(id, newParentId, newIndex, state.document.root),
-      };
-      return {
-        document: cloneNodeDoc(newDoc),
-        undoable: {
-          ...snapshot(state),
-          present: cloneNodeDoc(newDoc),
-        },
-      };
-    });
-  },
-
-  updateNodeProps: (id, props) => {
-    set((state) => {
-      if (!state.document) return state;
-      const newDoc = {
-        ...state.document,
-        root: state.document.root.map((n) =>
-          n.id === id ? { ...n, props: { ...n.props, ...props } } : n
-        ),
-      };
-      return {
-        document: cloneNodeDoc(newDoc),
-        undoable: {
-          ...snapshot(state),
-          present: cloneNodeDoc(newDoc),
-        },
-      };
-    });
-  },
-
-  updateNodeDesign: (id, design) => {
-    set((state) => {
-      if (!state.document) return state;
-      const newDoc = {
-        ...state.document,
-        root: state.document.root.map((n) =>
-          n.id === id ? { ...n, design: { ...n.design, ...design } } : n
-        ),
-      };
-      return {
-        document: cloneNodeDoc(newDoc),
-        undoable: {
-          ...snapshot(state),
-          present: cloneNodeDoc(newDoc),
-        },
-      };
-    });
-  },
-
-  selectNode: (id) => set({ selectedNodeId: id }),
-  setDialogNodeId: (id) => set({ dialogNodeId: id }),
   setMode: (mode) => set({ mode }),
 
   updateHead: (head) => {
@@ -336,7 +232,12 @@ export const usePageStore = create<PageStore>((set, get) => ({
       const pos = findNodeParentAndIndex(id, state.document.root);
       const newDoc = {
         ...state.document,
-        root: insertNode(pos?.parent?.id ?? null, clone, state.document.root, pos ? pos.index + 1 : state.document.root.length),
+        root: insertNode(
+          pos?.parent?.id ?? null,
+          clone,
+          state.document.root,
+          pos ? pos.index + 1 : state.document.root.length
+        ),
       };
       return {
         document: cloneNodeDoc(newDoc),
@@ -364,7 +265,12 @@ export const usePageStore = create<PageStore>((set, get) => ({
       const insertIndex = pos ? pos.index + 1 : state.document.root.length;
       const newDoc = {
         ...state.document,
-        root: insertNode(pos?.parent?.id ?? null, clipboardCopy, state.document.root, insertIndex),
+        root: insertNode(
+          pos?.parent?.id ?? null,
+          clipboardCopy,
+          state.document.root,
+          insertIndex
+        ),
       };
       return {
         document: cloneNodeDoc(newDoc),
@@ -389,7 +295,12 @@ export const usePageStore = create<PageStore>((set, get) => ({
       };
       const newDoc = {
         ...state.document,
-        root: insertNode(null, node, state.document.root, state.document.root.length),
+        root: insertNode(
+          null,
+          node,
+          state.document.root,
+          state.document.root.length
+        ),
       };
       return {
         document: cloneNodeDoc(newDoc),
