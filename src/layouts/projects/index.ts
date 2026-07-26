@@ -1,1 +1,1 @@
-export { default as DatabaseModeler } from "./DatabaseModeler"
+//export { default as DatabaseModeler } from "./DatabaseModeler"

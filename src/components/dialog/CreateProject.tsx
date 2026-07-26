@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog"
-import CreateProjectCard from "@/components/form/create-project"
+//import CreateProjectCard from "@/components/form/create-project"
+import { CreateProjectView } from "../view/CreateProjectView"
 import { ResolvedIcon } from "@/lib/iconutils"
 
 interface CreateProjectDialogProps {
@@ -24,7 +25,7 @@ const CreateProjectDialog: React.FC<CreateProjectDialogProps> = (
         }
       />
       <DialogContent className={`border-0 bg-transparent p-0`}>
-        <CreateProjectCard />
+        <CreateProjectView showSteps={false} />
       </DialogContent>
     </Dialog>
   )

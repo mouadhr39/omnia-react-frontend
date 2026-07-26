@@ -15,7 +15,7 @@ import {
   FieldError,
 } from "@/components/ui/field"
 
-interface LoginFormProps {
+interface CreateProjectFormProps {
   className?: string
 }
 
@@ -29,7 +29,7 @@ const CreateProjectFormSchema = z.object({
     .max(255, "project description should be at least 8 characters."),
 })
 
-const CreateProjectCard: React.FC<LoginFormProps> = ({
+const CreateProjectCard: React.FC<CreateProjectFormProps> = ({
   className,
   ...props
 }: React.ComponentProps<"div">) => {
