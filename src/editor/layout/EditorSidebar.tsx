@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { usePageStore } from '@/editor/store/usePageStore';
+import { useNodeStore } from '@/editor/store/useNodeStore';
 import { componentRegistry } from '@/editor/registry/components';
 import { type PageNode } from '@/editor/types/page';
 import { useDraggable } from '@dnd-kit/core';
@@ -10,9 +11,9 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 
 function ComponentListItem({ node }: { node: PageNode }) {
-  const selectNode = usePageStore((s) => s.selectNode);
-  const removeNode = usePageStore((s) => s.removeNode);
-  const selectedNodeId = usePageStore((s) => s.selectedNodeId);
+  const selectNode = useNodeStore((s) => s.selectNode);
+  const removeNode = useNodeStore((s) => s.removeNode);
+  const selectedNodeId = useNodeStore((s) => s.selectedNodeId);
   const typeLabel = componentRegistry.get(node.type)?.label ?? node.type;
 
   return (
@@ -85,7 +86,7 @@ function MediaItem({ node, onAdd }: { node: PageNode; onAdd: () => void }) {
 
 export function EditorSidebar() {
   const document = usePageStore((s) => s.document);
-  const addNode = usePageStore((s) => s.addNode);
+  const addNode = useNodeStore((s) => s.addNode);
 
   const flattenedComponents = useMemo(() => {
     const root = document?.root;

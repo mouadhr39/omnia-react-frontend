@@ -7,7 +7,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { usePageStore } from '@/editor/store/usePageStore';
+import { useNodeStore } from '@/editor/store/useNodeStore';
 import { ComponentType } from '@/editor/types/page';
 import { useState, useCallback } from 'react';
 
@@ -15,7 +15,7 @@ export function useDropManager() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [activeType, setActiveType] = useState<ComponentType | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
-  const store = usePageStore();
+  const nodeStore = useNodeStore();
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
@@ -49,15 +49,15 @@ export function useDropManager() {
 
     if (isNewNode) {
       const type = activeData.type as ComponentType;
-      const props = media?.props;
-      store.addNode(dropTargetId === '__root__' ? null : dropTargetId, type, props);
+      const props = media?.props ?? {};
+      nodeStore.addNode(dropTargetId === '__root__' ? null : dropTargetId, type, props);
       return;
     }
 
     if (active.id !== over.id) {
-      store.moveNode(active.id as string, dropTargetId === '__root__' ? null : dropTargetId, 0);
+      nodeStore.moveNode(active.id as string, dropTargetId === '__root__' ? null : dropTargetId, 0);
     }
-  }, [store]);
+  }, [nodeStore]);
 
   const handleDragCancel = useCallback(() => {
     setActiveId(null);

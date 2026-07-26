@@ -1,4 +1,5 @@
 import { usePageStore } from '@/editor/store/usePageStore';
+import { useNodeStore } from '@/editor/store/useNodeStore';
 import { IframeContainer } from '@/editor/iframe/IframeContainer';
 import { EditorSidebar } from '@/editor/layout/EditorSidebar';
 import { PropertiesPanel } from '@/editor/layout/PropertiesPanel';
@@ -9,15 +10,15 @@ import { cn } from '@/lib/utils';
 import { DndContext, type DragStartEvent } from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { pointerWithin } from '@dnd-kit/core';
-import type { ComponentType } from '@/editor/types/page';
+import { ComponentType } from '@/editor/types';
 import { ComponentDialog } from '@/editor/layout/ComponentDialog';
 
 export function WebEditorLayout() {
   const mode = usePageStore((s) => s.mode);
   const document = usePageStore((s) => s.document);
-  const openParsys = usePageStore((s) => s.openParsys);
-  const setOpenParsys = usePageStore((s) => s.setOpenParsys);
-  const parsysAdd = usePageStore((s) => s.parsysAdd);
+  const openParsys = useNodeStore((s) => s.openParsys);
+  const setOpenParsys = useNodeStore((s) => s.setOpenParsys);
+  const parsysAdd = useNodeStore((s) => s.parsysAdd);
   const createDocument = usePageStore((s) => s.createDocument);
 
   const {
@@ -82,7 +83,7 @@ export function WebEditorLayout() {
             <IframeContainer
               document={document}
               mode={mode}
-              onSelectNode={usePageStore.getState().selectNode}
+              onSelectNode={useNodeStore.getState().selectNode}
               activeId={activeId}
             />
             {mode === 'preview' && (

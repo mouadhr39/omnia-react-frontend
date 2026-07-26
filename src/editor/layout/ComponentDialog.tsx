@@ -1,4 +1,4 @@
-import { usePageStore } from '@/editor/store/usePageStore';
+import { useNodeStore } from '@/editor/store/useNodeStore';
 import { useComponentProps } from '@/editor/hooks/useComponentProps';
 import { componentRegistry } from '@/editor/registry/components';
 import { PropField } from '@/editor/layout/PropField';
@@ -12,8 +12,8 @@ import {
 import { Button } from '@/components/ui/button';
 
 const ComponentDialog: React.FC = () => {
-  const dialogNodeId = usePageStore((s) => s.dialogNodeId);
-  const setDialogNodeId = usePageStore((s) => s.setDialogNodeId);
+  const dialogNodeId = useNodeStore((s) => s.dialogNodeId);
+  const setDialogNodeId = useNodeStore((s) => s.setDialogNodeId);
   const { node, updateProps } = useComponentProps(dialogNodeId);
 
   const isOpen = !!node;

@@ -1,8 +1,8 @@
 import { Document, PageSummary } from '@/editor/types';
 import { StorageAdapter } from '@/editor/storage/storageAdapter';
 
-const OMNIA_SUMMARIES_KEY: string = "omnia::summaries";
-const OMNIA_PAGE_KEY: string = "omnia::page::";
+const OMNIA_SUMMARIES_KEY: string = 'omnia::summaries';
+const OMNIA_PAGE_KEY: string = 'omnia::page::';
 
 export const localStorageManager: StorageAdapter = {
   listPages: (): Array<PageSummary> => {
@@ -16,7 +16,7 @@ export const localStorageManager: StorageAdapter = {
 
   loadPage: (id: string): Document | null => {
     try {
-      const raw = localStorage.getItem(`omnia_page_${id}`);
+      const raw = localStorage.getItem(`${OMNIA_PAGE_KEY}${id}`);
       return raw ? JSON.parse(raw) : null;
     } catch {
       return null;
@@ -37,10 +37,17 @@ export const localStorageManager: StorageAdapter = {
       existing.title = document.title;
       existing.updatedAt = document.updatedAt;
     } else {
-      index.push({ id: document.id, title: document.title, updatedAt: document.updatedAt });
+      index.push({
+        id: document.id,
+        title: document.title,
+        updatedAt: document.updatedAt,
+      });
     }
     localStorage.setItem(OMNIA_SUMMARIES_KEY, JSON.stringify(index));
-    localStorage.setItem(`${OMNIA_PAGE_KEY}${document.id}`, JSON.stringify(document));
+    localStorage.setItem(
+      `${OMNIA_PAGE_KEY}${document.id}`,
+      JSON.stringify(document)
+    );
   },
 
   deletePage(this: StorageAdapter, id: string): void {

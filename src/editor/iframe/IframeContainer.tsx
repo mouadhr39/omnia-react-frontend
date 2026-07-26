@@ -1,6 +1,8 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { usePageStore } from '@/editor/store/usePageStore';
+import { useNodeStore } from '@/editor/store/useNodeStore';
+import { usePropStore } from '@/editor/store/usePropStore';
 import { EditorMode, PageDocument } from '@/editor/types/page';
 import { renderPageToHTML } from '@/editor/serializer/renderPageToHTML';
 
@@ -28,23 +30,23 @@ export function IframeContainer({
 
   const handleToolbarAction = useCallback(
     (nodeId: string, action: ToolbarAction) => {
-      const store = usePageStore.getState();
+      const nodeStore = useNodeStore.getState();
       switch (action) {
         case 'delete':
-          store.removeNode(nodeId);
-          store.selectNode(null);
+          nodeStore.removeNode(nodeId);
+          nodeStore.selectNode(null);
           break;
         case 'update':
-          store.setDialogNodeId(nodeId);
+          nodeStore.setDialogNodeId(nodeId);
           break;
         case 'copy':
-          store.copyToClipboard(nodeId);
+          nodeStore.copyToClipboard(nodeId);
           break;
         case 'paste':
-          store.pasteAfterNode(nodeId);
+          nodeStore.pasteAfterNode(nodeId);
           break;
         case 'move-up': {
-          const root = store.document?.root ?? [];
+          const root = usePageStore.getState().document?.root ?? [];
           let pos: { parentId: string | null; index: number } | null = null;
           for (let i = 0; i < root.length; i++) {
             if (root[i].id === nodeId) {
@@ -60,12 +62,12 @@ export function IframeContainer({
             if (pos) break;
           }
           if (pos && pos.index > 0) {
-            store.moveNode(nodeId, pos.parentId, pos.index - 1);
+            nodeStore.moveNode(nodeId, pos.parentId, pos.index - 1);
           }
           break;
         }
         case 'move-down': {
-          const rootDn = store.document?.root ?? [];
+          const rootDn = usePageStore.getState().document?.root ?? [];
           let pos2: {
             parentId: string | null;
             index: number;
@@ -89,7 +91,7 @@ export function IframeContainer({
             if (pos2) break;
           }
           if (pos2 && pos2.index < pos2.total - 1) {
-            store.moveNode(nodeId, pos2.parentId, pos2.index + 1);
+            nodeStore.moveNode(nodeId, pos2.parentId, pos2.index + 1);
           }
           break;
         }
@@ -111,13 +113,13 @@ export function IframeContainer({
         msg.nodeId &&
         msg.nodeId !== '__parsys__'
       ) {
-        usePageStore.getState().setDialogNodeId(msg.nodeId);
+        useNodeStore.getState().setDialogNodeId(msg.nodeId);
       } else if (msg.type === 'OPEN_PARSYS') {
-        usePageStore.getState().setDialogNodeId(null);
+        useNodeStore.getState().setDialogNodeId(null);
         usePageStore.getState().setMode('edit');
-        usePageStore.getState().setOpenParsys(true);
+        useNodeStore.getState().setOpenParsys(true);
       } else if (msg.type === 'UPDATE_PROPS' && msg.nodeId && msg.prop) {
-        usePageStore
+        usePropStore
           .getState()
           .updateNodeProps(msg.nodeId, { [msg.prop]: msg.value });
       } else if (msg.type === 'TOOLBAR_ACTION' && msg.nodeId && msg.action) {

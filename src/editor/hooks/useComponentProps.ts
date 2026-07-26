@@ -1,14 +1,14 @@
 import { PageNode } from '@/editor/types/page';
 import { usePageStore } from '@/editor/store/usePageStore';
+import { usePropStore } from '@/editor/store/usePropStore';
 
 export function useComponentProps(nodeId: string | null) {
   const document = usePageStore((s) => s.document);
-  const selectedNode = nodeId ? findNode(nodeId, document?.root || []) : null;
-  const updateNodeProps = usePageStore((s) => s.updateNodeProps);
-  const updateNodeDesign = usePageStore((s) => s.updateNodeDesign);
+  const updateNodeProps = usePropStore((s) => s.updateNodeProps);
+  const updateNodeDesign = usePropStore((s) => s.updateNodeDesign);
 
   return {
-    node: selectedNode,
+    node: nodeId ? findNode(nodeId, document?.root || []) : null,
     updateProps: (props: Record<string, unknown>) => {
       if (nodeId) updateNodeProps(nodeId, props);
     },

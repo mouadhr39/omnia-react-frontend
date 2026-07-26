@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { usePageStore } from '@/editor/store/usePageStore';
+import { useNodeStore } from '@/editor/store/useNodeStore';
 import { useComponentProps, usePageHead } from '@/editor/hooks/useComponentProps';
 import { componentRegistry } from '@/editor/registry/components';
 import { PropField } from '@/editor/layout/PropField';
@@ -10,7 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { type PageDocument } from '@/editor/types/page';
 
 export function PropertiesPanel() {
-  const selectedNodeId = usePageStore((s) => s.selectedNodeId);
+  const selectedNodeId = useNodeStore((s) => s.selectedNodeId);
   const updateHead = usePageStore((s) => s.updateHead);
   const { node, updateProps, updateDesign } = useComponentProps(selectedNodeId);
   const { head } = usePageHead();
