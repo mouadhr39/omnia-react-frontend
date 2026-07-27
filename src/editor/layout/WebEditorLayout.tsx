@@ -7,7 +7,7 @@ import { ComponentPicker } from '@/editor/layout/ComponentPicker';
 import { Toolbar } from '@/editor/layout/Toolbar';
 import { useDropManager } from '@/editor/hooks/useDropManager';
 import { cn } from '@/lib/utils';
-import { DndContext, type DragStartEvent } from '@dnd-kit/core';
+import { DndContext, DragStartEvent } from '@dnd-kit/core';
 import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { pointerWithin } from '@dnd-kit/core';
 import { ComponentType } from '@/editor/types';
@@ -20,6 +20,10 @@ export function WebEditorLayout() {
   const setOpenParsys = useNodeStore((s) => s.setOpenParsys);
   const parsysAdd = useNodeStore((s) => s.parsysAdd);
   const createDocument = usePageStore((s) => s.createDocument);
+  const isPanelLeftOpen = usePageStore((s) => s.leftPanelOpen);
+  const isPanelRightOpen = usePageStore((s) => s.rightPanelOpen);
+
+  console.log('isPanelLeftOpen ', isPanelLeftOpen);
 
   const {
     sensors,
@@ -59,7 +63,7 @@ export function WebEditorLayout() {
   };
 
   return (
-    <div className="flex h-full flex-col mt-1 ml-1">
+    <div className="mt-1 ml-1 flex h-full flex-col">
       <Toolbar />
       <DndContext
         sensors={sensors}
@@ -73,11 +77,15 @@ export function WebEditorLayout() {
         <div className={cn('flex min-h-0 flex-1')}>
           <aside
             className={cn(
-              'flex w-[260px] flex-col border-r bg-muted/30',
-              mode === 'preview' && 'hidden'
+              'flex flex-col overflow-hidden border-r bg-muted/30 transition-all duration-200 ease-in-out',
+              mode === 'preview' || !isPanelLeftOpen
+                ? 'w-0 -translate-x-full border-r-0 opacity-0'
+                : 'w-[300px] translate-x-0 opacity-100'
             )}
           >
-            <EditorSidebar />
+            <div className="flex w-[300px] flex-1 flex-col overflow-hidden">
+              <EditorSidebar />
+            </div>
           </aside>
           <main className="relative min-w-0 flex-1 bg-muted/20">
             <IframeContainer
@@ -99,11 +107,15 @@ export function WebEditorLayout() {
           </main>
           <aside
             className={cn(
-              'flex w-[300px] flex-col border-l bg-background',
-              mode === 'preview' && 'hidden'
+              'flex flex-col overflow-hidden border-r bg-muted/30 transition-all duration-200 ease-in-out',
+              mode === 'preview' || !isPanelRightOpen
+                ? 'w-0 -translate-x-full border-r-0 opacity-0'
+                : 'w-[300px] translate-x-0 opacity-100'
             )}
           >
-            <PropertiesPanel />
+            <div className="flex w-[300px] flex-1 flex-col overflow-hidden">
+              <PropertiesPanel />
+            </div>
           </aside>
         </div>
         <ComponentDialog />

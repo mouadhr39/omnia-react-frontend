@@ -1,9 +1,9 @@
-import { PageDocument, EditorMode } from '@/editor/types/page';
+import { Document, EditorMode } from '@/editor/types';
 import { serializeNode } from '@/editor/serializer/serializeNode';
 import { escapeHTML } from '@/editor/serializer/htmlEscape';
 
 export function renderPageToHTML(
-  doc: PageDocument,
+  doc: Document,
   options: { mode: EditorMode }
 ): string {
   const headHTML = `
@@ -224,6 +224,7 @@ export function renderPageToHTML(
       });
 
       $(window).on('focusout', function(e) {
+        console.log("focusout");
         const $target = $(e.target);
         
         if ($target.is('[contenteditable]')) {

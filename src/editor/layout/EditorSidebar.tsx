@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { usePageStore } from '@/editor/store/usePageStore';
 import { useNodeStore } from '@/editor/store/useNodeStore';
 import { componentRegistry } from '@/editor/registry/components';
-import { type PageNode } from '@/editor/types/page';
+import { PageNode } from '@/editor/types';
 import { useDraggable } from '@dnd-kit/core';
 import { generateId } from '@/editor/utils/generateId';
 import { mediaAssets } from '@/editor/media/mediaStore';
@@ -101,7 +101,7 @@ export function EditorSidebar() {
       props: { ...node.props },
       children: [],
       order: 0,
-      parentId: null,
+      parentID: null,
       design: {},
     };
     addNode(null, newNode.type, newNode.props);

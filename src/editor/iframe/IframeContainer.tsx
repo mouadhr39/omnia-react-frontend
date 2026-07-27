@@ -3,11 +3,11 @@ import { useDroppable } from '@dnd-kit/core';
 import { usePageStore } from '@/editor/store/usePageStore';
 import { useNodeStore } from '@/editor/store/useNodeStore';
 import { usePropStore } from '@/editor/store/usePropStore';
-import { EditorMode, PageDocument } from '@/editor/types/page';
+import { EditorMode, Document } from '@/editor/types';
 import { renderPageToHTML } from '@/editor/serializer/renderPageToHTML';
 
 interface IframeContainerProps {
-  document: PageDocument | null;
+  document: Document | null;
   mode: EditorMode;
   onSelectNode: (nodeId: string | null) => void;
   activeId: string | null;
@@ -133,6 +133,7 @@ export function IframeContainer({
 
   const handleLoad = useCallback(() => {
     // iframe loaded
+    console.log("iframe loaded");
   }, []);
 
   useEffect(() => {

@@ -12,6 +12,8 @@ export interface PageStore {
   lastSaved: number | null;
   undoable: UndoableState;
   adapter: StorageAdapter;
+  leftPanelOpen: boolean;
+  rightPanelOpen: boolean;
   loadDocument: (id: string) => Promise<void>;
   createDocument: (title: string) => Promise<void>;
   saveDocument: () => Promise<void>;
@@ -21,6 +23,8 @@ export interface PageStore {
   undo: () => void;
   redo: () => void;
   setDocument: (newDoc: Document) => void;
+  toggleLeftPanel: () => void;
+  toggleRightPanel: () => void;
 }
 
 const HISTORY_LIMIT = 50;
@@ -46,6 +50,8 @@ export const usePageStore = create<PageStore>((set, get) => ({
   lastSaved: null,
   undoable: { past: [], present: null, future: [] },
   adapter: localStorageManager,
+  leftPanelOpen: true,
+  rightPanelOpen: true,
 
   loadDocument: async (id: string) => {
     const doc = await get().adapter.loadPage(id);
@@ -168,4 +174,15 @@ export const usePageStore = create<PageStore>((set, get) => ({
         present: cloneDocument(newDoc),
       },
     })),
+
+  toggleRightPanel: () => {
+    set((state) => ({
+      rightPanelOpen: !state.rightPanelOpen,
+    }));
+  },
+  toggleLeftPanel: () => {
+    set((state) => ({
+      leftPanelOpen: !state.leftPanelOpen,
+    }));
+  }
 }));

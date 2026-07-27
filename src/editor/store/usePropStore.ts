@@ -15,8 +15,8 @@ export const usePropStore = create<PropStore>(() => ({
 
     const newDoc = {
       ...document,
-      root: document.root.map((n) =>
-        n.id === id ? { ...n, props: { ...n.props, ...props } } : n
+      root: document.root.map((node) =>
+        node.id === id ? { ...node, props: { ...node.props, ...props } } : node
       ),
     };
     pageStore.setDocument(newDoc);
@@ -29,8 +29,10 @@ export const usePropStore = create<PropStore>(() => ({
 
     const newDoc = {
       ...document,
-      root: document.root.map((n) =>
-        n.id === id ? { ...n, design: { ...n.design, ...design } } : n
+      root: document.root.map((node) =>
+        node.id === id
+          ? { ...node, design: { ...node.design, ...design } }
+          : node
       ),
     };
     pageStore.setDocument(newDoc);

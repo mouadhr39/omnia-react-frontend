@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { componentRegistry } from '@/editor/registry/components';
-import { type ComponentType } from '@/editor/types/page';
+import { ComponentType } from '@/editor/types';
 import { useDraggable } from '@dnd-kit/core';
 
 function DraggableItem({

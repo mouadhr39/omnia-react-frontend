@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { usePageStore } from '@/editor/store/usePageStore';
 import { useNodeStore } from '@/editor/store/useNodeStore';
-import { useComponentProps, usePageHead } from '@/editor/hooks/useComponentProps';
+import {
+  useComponentProps,
+  usePageHead,
+} from '@/editor/hooks/useComponentProps';
 import { componentRegistry } from '@/editor/registry/components';
 import { PropField } from '@/editor/layout/PropField';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { type PageDocument } from '@/editor/types/page';
+import { ComponentDefinition, Document } from '@/editor/types';
 
 export function PropertiesPanel() {
   const selectedNodeId = useNodeStore((s) => s.selectedNodeId);
@@ -20,69 +23,110 @@ export function PropertiesPanel() {
   if (!selectedNodeId || !node) {
     return (
       <div className="h-full overflow-y-auto p-4">
-        <Tabs value={tab} onValueChange={(v) => setTab(v as 'props' | 'design' | 'page')}>
+        <Tabs
+          value={tab}
+          onValueChange={(v) => setTab(v as 'props' | 'design' | 'page')}
+        >
           <TabsList className="w-full">
-            <TabsTrigger value="props" className="flex-1">Props</TabsTrigger>
-            <TabsTrigger value="design" className="flex-1">Design</TabsTrigger>
-            <TabsTrigger value="page" className="flex-1">Page</TabsTrigger>
+            <TabsTrigger value="props" className="flex-1">
+              Props
+            </TabsTrigger>
+            <TabsTrigger value="design" className="flex-1">
+              Design
+            </TabsTrigger>
+            <TabsTrigger value="page" className="flex-1">
+              Page
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="page" className="space-y-4 mt-4">
+          <TabsContent value="page" className="mt-4 space-y-4">
             <PageSettings head={head} updateHead={updateHead} />
           </TabsContent>
           <TabsContent value="props" className="mt-4">
-            <p className="text-sm text-muted-foreground">Select a component to edit its properties.</p>
+            <p className="text-sm text-muted-foreground">
+              Select a component to edit its properties.
+            </p>
           </TabsContent>
           <TabsContent value="design" className="mt-4">
-            <p className="text-sm text-muted-foreground">Select a component to edit its design.</p>
+            <p className="text-sm text-muted-foreground">
+              Select a component to edit its design.
+            </p>
           </TabsContent>
         </Tabs>
       </div>
     );
   }
 
-  const def = node.type ? componentRegistry.get(node.type) ?? null : null;
+  const componentDefinition: ComponentDefinition = node.type
+    ? (componentRegistry.get(node.type) ?? null)
+    : null;
 
-  if (!def) return null;
+  if (!componentDefinition) return null;
 
   return (
     <div className="h-full overflow-y-auto p-4">
       <div className="mb-3">
-        <h3 className="text-sm font-semibold">{def.label || def.type}</h3>
-        <p className="text-xs text-muted-foreground">{def.type}</p>
+        <h3 className="text-sm font-semibold">
+          {componentDefinition.label || 'Unknown component'}
+        </h3>
+        <p className="text-xs text-muted-foreground">
+          {componentDefinition.type}
+        </p>
       </div>
       <Separator className="mb-3" />
-      <Tabs value={tab} onValueChange={(v) => setTab(v as 'props' | 'design' | 'page')}>
+      <Tabs
+        value={tab}
+        onValueChange={(v) => setTab(v as 'props' | 'design' | 'page')}
+      >
         <TabsList className="w-full">
-          <TabsTrigger value="props" className="flex-1">Props</TabsTrigger>
-          <TabsTrigger value="design" className="flex-1">Design</TabsTrigger>
-          <TabsTrigger value="page" className="flex-1">Page</TabsTrigger>
+          <TabsTrigger value="props" className="flex-1">
+            Props
+          </TabsTrigger>
+          <TabsTrigger value="design" className="flex-1">
+            Design
+          </TabsTrigger>
+          <TabsTrigger value="page" className="flex-1">
+            Page
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="props" className="space-y-4 mt-4">
-          {def.propsSchema.map((schema) => (
-            <PropField key={schema.key} schema={schema} value={node.props[schema.key]} onChange={(v) => updateProps({ [schema.key]: v })} />
+        <TabsContent value="props" className="mt-4 space-y-4">
+          {componentDefinition.propsSchema.map((schema) => (
+            <PropField
+              key={schema.key}
+              schema={schema}
+              value={node.props[schema.key]}
+              onChange={(v) => updateProps({ [schema.key]: v })}
+            />
           ))}
         </TabsContent>
-        <TabsContent value="design" className="space-y-4 mt-4">
+        <TabsContent value="design" className="mt-4 space-y-4">
           <div>
-            <Label htmlFor="design-css" className="text-xs">CSS</Label>
+            <Label htmlFor="design-css" className="text-xs">
+              CSS
+            </Label>
             <Textarea
               id="design-css"
               value={node.design.css || ''}
               onChange={(e) => updateDesign({ css: e.target.value })}
               placeholder=".my-class { color: red; }"
-              className="font-mono text-xs h-32"
+              className="h-32 font-mono text-xs"
             />
           </div>
           <div>
-            <Label htmlFor="design-js" className="text-xs flex items-center gap-1">
-              JS <span className="text-amber-500 text-[10px]">⚠ only trusted code</span>
+            <Label
+              htmlFor="design-js"
+              className="flex items-center gap-1 text-xs"
+            >
+              JS{' '}
+              <span className="text-[10px] text-amber-500">
+                ⚠ only trusted code
+              </span>
             </Label>
             <Textarea
               id="design-js"
               value={node.design.js || ''}
               onChange={(e) => updateDesign({ js: e.target.value })}
               placeholder="console.log('hello');"
-              className="font-mono text-xs h-32"
+              className="h-32 font-mono text-xs"
             />
           </div>
         </TabsContent>
@@ -94,7 +138,13 @@ export function PropertiesPanel() {
   );
 }
 
-function PageSettings({ head, updateHead }: { head: PageDocument['head'] | undefined; updateHead: (head: Partial<PageDocument['head']>) => void }) {
+function PageSettings({
+  head,
+  updateHead,
+}: {
+  head: Document['head'] | undefined;
+  updateHead: (head: Partial<Document['head']>) => void;
+}) {
   return (
     <div className="space-y-4">
       <div className="space-y-1">
@@ -103,7 +153,7 @@ function PageSettings({ head, updateHead }: { head: PageDocument['head'] | undef
           value={head?.css?.join('\n') || ''}
           onChange={(e) => updateHead({ css: e.target.value.split('\n') })}
           placeholder="body { background: #fafafa; }"
-          className="font-mono text-xs h-24"
+          className="h-24 font-mono text-xs"
         />
       </div>
       <div className="space-y-1">
@@ -112,13 +162,19 @@ function PageSettings({ head, updateHead }: { head: PageDocument['head'] | undef
           value={head?.js?.join('\n') || ''}
           onChange={(e) => updateHead({ js: e.target.value.split('\n') })}
           placeholder="console.log('page ready');"
-          className="font-mono text-xs h-24"
+          className="h-24 font-mono text-xs"
         />
       </div>
       <div className="space-y-1">
         <Label className="text-xs">Meta Tags</Label>
         <Textarea
-          value={head?.meta ? Object.entries(head.meta).map(([k, v]) => `${k}: ${v}`).join('\n') : ''}
+          value={
+            head?.meta
+              ? Object.entries(head.meta)
+                  .map(([k, v]) => `${k}: ${v}`)
+                  .join('\n')
+              : ''
+          }
           onChange={(e) => {
             const meta: Record<string, string> = {};
             e.target.value.split('\n').forEach((line: string) => {
@@ -128,7 +184,7 @@ function PageSettings({ head, updateHead }: { head: PageDocument['head'] | undef
             updateHead({ meta });
           }}
           placeholder="description: My page"
-          className="font-mono text-xs h-24"
+          className="h-24 font-mono text-xs"
         />
       </div>
     </div>
